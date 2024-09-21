@@ -1,54 +1,3 @@
-// CLASES
-
-class Polinomio2{
-
-    #a;
-    #b;
-    #c;
-
-    constructor(a,b,c){
-        this.#a = a;
-        this.#b = b;
-        this.#c = c;
-    }
-
-    get a(){return this.#a};
-    get b(){return this.#b};
-    get c(){return this.#c};
-
-    set a(a){this.#a = a};
-    set b(b){this.#a = b};
-    set c(c){this.#a = c};
-}
-
-class Raices{
-
-    #x1;
-    #x2;
-
-    constructor(x1,x2){
-        this.#x1 = x1;
-        this.#x2 = x2;
-    }
-
-    get x1(){return this.#x1};
-    get x2(){return this.#x2};
-
-    set x1(x1){this.#x1 = x1};
-    set x2(x2){this.#x2 = x2};
-
-    imprimirRaices(){return `x1 = ${this.#x1} ; x2 = ${this.#x2}`};
-}
-
-//FUNCIONES
-
-/**
- * Escribe el parametro en consola.
- * @param {*} imprimir - Parametro para imprimir en consola
- * @returns {void}
-*/
-const imprimirEnConsola = imprimir => {console.log(imprimir)};
-
 /**
  * Calcula el discriminante de un polinomio cuadratico o tambien llamado de grado 2
  * @param {object} polinomio2Obj Instacia de la clase Polinomio2
@@ -138,6 +87,11 @@ function calcularResolvente(polinomio2Obj){
     resultado.innerHTML = `<p>${mensajeSalida}</p>`;
     resultado.innerHTML += `<p>x1: ${raicesOBJ.x1}</p>`;
     resultado.innerHTML += `<p>x2: ${raicesOBJ.x2}</p>`;
+
+    Toastify({
+        text: "Raices del polinomio cuadratico calculadas con exito",
+        duration: 3000
+    }).showToast();
     
 }
 
@@ -156,11 +110,31 @@ const validacionDeConstante = (a,b,c) =>{
         dato = parseFloat(constantes[i]);
         if(isNaN(dato)){
             let mensaje = "Las constantes deben ser valores numericos";
+
+            Swal.fire(
+                {
+                    title: 'ERROR!',
+                    text: mensaje,
+                    icon: 'error',
+                    confirmButtonText: 'Aceptar'
+                }
+            )
+
             resultados.innerHTML = `<p>${mensaje}</p>`;
             valido = false;
             break
         } else if(i == 0 && dato === 0){
             let mensaje = "La constante A debe ser distinta de cero";
+
+            Swal.fire(
+                {
+                    title: 'ERROR!',
+                    text: mensaje,
+                    icon: 'error',
+                    confirmButtonText: 'Aceptar'
+                }
+            )
+
             resultados.innerHTML = `<p>${mensaje}</p>`;
             valido = false;
             break
@@ -191,10 +165,6 @@ const obtenerConstantes = () => {
     poliCuadratico(constanteA,constanteB,constanteC);
 }
 
-/**
- * MAIN
- */
-
 const principal = () => {
     let constanteA = document.querySelector("#constanteA");
     let constanteB = document.querySelector("#constanteB");
@@ -202,6 +172,25 @@ const principal = () => {
     constanteA.value = JSON.parse(localStorage.getItem("a"));
     constanteB.value = JSON.parse(localStorage.getItem("b"));
     constanteC.value = JSON.parse(localStorage.getItem("c"));
+
+    let ejemplos = document.querySelector("#ejemplos");
+
+    //API
+    const apiURL = './datos/api.json';
+
+    fetch(apiURL)
+    .then(respuesta => respuesta.json())
+    .then(datos => {
+        datos.forEach(constantes => {
+            ejemplos.innerHTML += `<p>a: ${constantes.a} | b: ${constantes.b} | c: ${constantes.c} |</p>`
+        });
+    })
+    .catch(error => {
+        Toastify({
+            text: error,
+            duration: 3000
+        }).showToast();
+    })
 
     let resultados = document.querySelector("#resultado");
     let mensaje = JSON.parse(localStorage.getItem("mensajeSalida"));
@@ -214,9 +203,3 @@ const principal = () => {
     let calcular = document.querySelector("#calcularRaices");
     calcular.addEventListener("click", obtenerConstantes);
 }
-/*EJECUCION*/
-principal();
-
-
-
-
